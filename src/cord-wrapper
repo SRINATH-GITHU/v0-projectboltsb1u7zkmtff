@@ -1,0 +1,12 @@
+@@ .. @@
+ .cord-wrapper {
+   position: absolute;
+   top: -120px;
+   left: 50%;
+   transform: translateX(-50%);
+   width: 60px;
+-  height: 250px;
++  height: 300px;
+   cursor: pointer;
+   z-index: 10;
+ }

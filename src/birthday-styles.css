@@ -1,0 +1,984 @@
+@import url("./butterfly.css");
+
+/* Birthday Card Styles */
+.birthday-card-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.card-3d {
+  perspective: 1200px;
+  perspective-origin: 50% 35%;
+}
+
+.card {
+  position: relative;
+  width: 400px;
+  height: 550px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transform-origin: top;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+}
+
+.card.glass {
+  /* translucent 3D glass aesthetic */
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 24px;
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.card.glass.open {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.1) 100%);
+  pointer-events: none;
+}
+
+.card-content {
+  padding: 30px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  text-align: center;
+  display: flex;
+  justify-content: space-between; /* ensure the action button stays visible by distributing vertical space */
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.card.open {
+  transform: rotateX(0deg);
+}
+
+.card.open .card-content {
+  opacity: 1;
+}
+
+.cord-wrapper {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 200px;
+  cursor: grab;
+  z-index: 10;
+}
+
+.cord {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.cord-path {
+  stroke: #fe3a65;
+  stroke-width: 2;
+  fill: none;
+}
+
+.plug {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 60px;
+  fill: #fe3a65;
+  cursor: grab;
+  transform: translateY(140px);
+  transform-origin: 50% 0%;
+  z-index: 20;
+}
+
+.plug:active {
+  cursor: grabbing;
+}
+
+.ribbon {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 8px;
+  height: 100%;
+  background: #fe3a65;
+  transform-origin: top;
+  transform: translateX(-50%);
+}
+
+.text-intro {
+  color: white;
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+  text-align: center;
+  width: 200px;
+  line-height: 1.4;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+/* Add card title style to match cake greeting (translucent glass aesthetic, readable on background) */
+.card__greeting-title {
+  font-family: "Georgia", serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.1;
+  /* compact size to preserve layout */
+  font-size: 22px;
+  /* gradient text like cake */
+  background: linear-gradient(45deg, #ffffff, #fff5cc, #ffee88);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* subtle readability */
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* High-contrast, warm body text for the card messages to read well on glass */
+.card-message {
+  color: #fff6cf; /* warm light for better contrast on soft backgrounds */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+.card-message p {
+  color: inherit;
+}
+/* Optional emphasis states */
+.card-message em,
+.card-message strong {
+  color: #ffe89a;
+}
+
+@media (min-width: 768px) {
+  .card__greeting-title {
+    font-size: 26px;
+  }
+}
+
+#canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Butterfly flying animation */
+.flying-away {
+  animation: flyAway 2s ease-out forwards !important;
+}
+
+@keyframes flyAway {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(200px, -300px) scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(800px, -800px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Stagger the butterfly animations */
+.butterfly_container:nth-child(1).flying-away {
+  animation-delay: 0s;
+}
+
+.butterfly_container:nth-child(2).flying-away {
+  animation-delay: 0.2s;
+}
+
+.butterfly_container:nth-child(3).flying-away {
+  animation-delay: 0.4s;
+}
+
+.butterfly_container:nth-child(4).flying-away {
+  animation-delay: 0.6s;
+}
+
+.butterfly_container:nth-child(5).flying-away {
+  animation-delay: 0.8s;
+}
+
+.butterfly_container:nth-child(6).flying-away {
+  animation-delay: 1s;
+}
+
+.butterfly_container:nth-child(7).flying-away {
+  animation-delay: 1.2s;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+  to {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.6);
+  }
+}
+
+.sparkles-container {
+  position: relative;
+  height: 100px;
+}
+
+.sparkle {
+  position: absolute;
+  animation: sparkle 3s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.buttons button {
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  min-width: 140px;
+}
+
+.buttons button.yes {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+.buttons button.no {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  color: white;
+  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+}
+
+.buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.buttons button:active {
+  transform: translateY(0px);
+}
+
+/* Birthday Cake Styles */
+:root {
+  --tongue: #c12115;
+  --pupil: #fff;
+  --icing: #f2f2f2;
+  --stroke: #1a1a1a;
+  --sprinkle-hue: 0; /* Added for cake sprinkles */
+}
+
+body {
+  --frosting: hsl(var(--frosting-hue, 0), 100%, 55%);
+  --lightness: 50;
+  --flame: 0;
+  --glow-hue: 40;
+  --glow-saturation: 50;
+  --glow-lightness: 35;
+  --glow-alpha: 0.4;
+  --transparency-alpha: 0;
+  --glow: hsla(var(--glow-hue), calc(var(--glow-saturation) * 1%), calc(var(--glow-lightness) * 1%), var(--glow-alpha));
+  --transparent: hsla(0, 0%, 0%, var(--transparency-alpha));
+}
+
+.birthday-cake-container {
+  position: relative;
+  z-index: 5;
+  padding: 60px;
+  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 192, 203, 0.2) 0%,
+    rgba(255, 215, 0, 0.15) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(135, 206, 235, 0.15) 75%,
+    rgba(221, 160, 221, 0.2) 100%
+  );
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 215, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  animation: containerGlow 4s ease-in-out infinite;
+}
+
+@keyframes containerGlow {
+  0%,
+  100% {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 215, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 50px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+}
+
+/* Aesthetic Background Effects */
+.cake-background-effects {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.floating-sparkles .sparkle-float {
+  animation: sparkleFloat 4s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+@keyframes sparkleFloat {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+    opacity: 0.7;
+  }
+  25% {
+    transform: translateY(-10px) rotate(90deg) scale(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-5px) rotate(180deg) scale(0.8);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translateY(-15px) rotate(270deg) scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+.cake-glow-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  height: 400px;
+  margin-left: -200px;
+  margin-top: -200px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 215, 0, 0.4) 0%,
+    rgba(255, 105, 180, 0.3) 30%,
+    rgba(135, 206, 235, 0.2) 60%,
+    transparent 80%
+  );
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+.cake-glow-ring::before {
+  content: "";
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 215, 0, 0.1) 50%, transparent 70%);
+  animation: pulseGlow 2s ease-in-out infinite reverse;
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.7;
+  }
+  25% {
+    transform: scale(1.05) rotate(90deg);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.15) rotate(180deg);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.08) rotate(270deg);
+    opacity: 0.85;
+  }
+}
+
+.cake-shadow {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  width: 300px;
+  height: 60px;
+  margin-left: -150px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(15px);
+  animation: shadowPulse 3s ease-in-out infinite;
+}
+
+@keyframes shadowPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+/* Magical Particles */
+.magical-particles .particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #ffd700, transparent);
+  border-radius: 50%;
+  animation: magicalFloat 4s ease-in-out infinite;
+}
+
+.magical-particles .particle:nth-child(odd) {
+  background: radial-gradient(circle, #ff69b4, transparent);
+  animation-duration: 3.5s;
+}
+
+.magical-particles .particle:nth-child(3n) {
+  background: radial-gradient(circle, #87ceeb, transparent);
+  animation-duration: 4.5s;
+}
+
+@keyframes magicalFloat {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-10px) scale(0.8);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translateY(-30px) scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.cake-section {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+}
+
+.birthday-button.aesthetic-cake {
+  position: relative;
+  transform: scale(0.6);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.birthday-button.aesthetic-cake:hover {
+  transform: scale(0.65);
+}
+
+.birthday-button {
+  position: relative;
+  transform: scale(0.6);
+  cursor: pointer;
+}
+
+.birthday-button:before {
+  content: "";
+  height: 240px;
+  width: 240px;
+  background: radial-gradient(var(--glow), var(--transparent) 30%), radial-gradient(var(--glow), var(--transparent) 50%);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -70%) scale(calc(var(--flame) * 3));
+  z-index: 2;
+  filter: blur(15px);
+  opacity: var(--flame);
+}
+
+.birthday-button:after {
+  content: "";
+  height: 30px;
+  width: 400px;
+  filter: blur(15px);
+  position: absolute;
+  background: radial-gradient(var(--glow), var(--transparent) 20%), radial-gradient(var(--glow), var(--transparent));
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(calc(var(--flame) * 1));
+  opacity: var(--flame);
+}
+
+.birthday-button__button.cake-button {
+  width: 280px;
+  height: 120px;
+  position: relative;
+  border: 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 25%, #ffffff 50%, #f1f3f4 75%, #e9ecef 100%);
+  border-radius: 18px;
+  cursor: pointer;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 2px solid rgba(255, 215, 0, 0.2);
+  z-index: 1; /* Keep the pill/button below the overlay text */
+}
+
+.birthday-button__button.cake-button:hover {
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.3),
+    0 8px 20px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    0 0 20px rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+}
+
+.birthday-button__button {
+  width: 240px;
+  height: 100px;
+  position: relative;
+  border: 0;
+  background: var(--icing);
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.birthday-button__cake {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 320px;
+  display: none;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 15px rgba(255, 215, 0, 0.2));
+  animation: cakeGlow 3s ease-in-out infinite;
+  z-index: 5;
+}
+
+@keyframes cakeGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 15px rgba(255, 215, 0, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 25px rgba(255, 215, 0, 0.4));
+  }
+}
+
+.birthday-button__text {
+  position: absolute; /* Ensure the 'Happy Birthday Gayathri' text overlays above the card/cake and remains clickable-transparent */
+  z-index: 50; /* sit above the white pill and cake */
+  pointer-events: none; /* don't block interactions */
+  mix-blend-mode: normal;
+  /* solid, high-contrast color for readability on light backgrounds */
+  color: #1e40af; /* deep indigo */
+  /* center within the button area */
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  /* readable typography */
+  font-size: 1.6rem; /* slightly smaller to avoid overlaps */
+  font-family: "Georgia", serif;
+  font-weight: 700;
+
+  /* improve contrast and separation from background */
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.birthday-button__text[data-split="true"] {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.birthday-button__text[data-split="true"] .char {
+  display: inline-block;
+  background: linear-gradient(90deg, #ff69b4, #ffd700, #87ceeb, #98fb98, #dda0dd);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  /* keep legibility while chars are visible */
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.birthday-button__text .char {
+  opacity: 1;
+  color: inherit;
+  -webkit-text-fill-color: inherit;
+  text-shadow: inherit;
+}
+
+/* Click to Cut Cake Message */
+.cut-cake-message {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.message-bubble {
+  background: linear-gradient(135deg, #ff69b4, #ff1493);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0 8px 20px rgba(255, 20, 147, 0.4);
+  animation: bounceMessage 2s ease-in-out infinite;
+  position: relative;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.message-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #ff1493;
+}
+
+.pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 25px;
+  animation: pulseRing 2s ease-out infinite;
+}
+
+@keyframes bounceMessage {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.3);
+    opacity: 0;
+  }
+}
+
+.invisible-click-area {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 200px;
+  cursor: pointer;
+  z-index: 5;
+}
+
+/* Success Message */
+.cut-success {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  scale: 0.8;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.success-content {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+  padding: 30px 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 215, 0, 0.5);
+}
+
+.success-content h2 {
+  color: #ff1493;
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.success-content p {
+  color: #333;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.birthday-hearts {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.heart-float {
+  display: inline-block;
+  font-size: 20px;
+  animation: heartFloat 2s ease-in-out infinite;
+}
+
+.heart-float:nth-child(1) {
+  animation-delay: 0s;
+}
+.heart-float:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.heart-float:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.heart-float:nth-child(4) {
+  animation-delay: 0.6s;
+}
+.heart-float:nth-child(5) {
+  animation-delay: 0.8s;
+}
+
+@keyframes heartFloat {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.2);
+  }
+}
+
+/* Cake section positioning */
+.cake-section {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.birthday-cake-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Footer */
+.footer-text {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card {
+    width: 350px;
+    height: 500px;
+  }
+
+  .birthday-button {
+    transform: scale(0.8);
+  }
+
+  .birthday-button__button {
+    width: 300px;
+    height: 120px;
+  }
+
+  .birthday-button__text {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    width: 320px;
+    height: 450px;
+  }
+
+  .buttons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    min-width: 120px;
+  }
+}
+
+/* Celebration animations */
+.celebration-hearts {
+  animation: heartBeat 2s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Exact butterfly background from original HTML */
+.background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.birthday-experience {
+  position: relative;
+  z-index: 10;
+  padding: 20px;
+}
+
+.cake-section {
+  margin-top: 40px;
+  animation: slideUp 1s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* on-cake greeting styling */
+.cake__greeting-label {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  font-family: "Georgia", serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 18px;
+  line-height: 1;
+  /* vibrant readable text over cake */
+  background: linear-gradient(45deg, #ffffff, #fff5cc, #ffee88);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* subtle readability */
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.25);
+  opacity: 0; /* revealed by GSAP in MASTER_TL */
+}
+
+@media (max-width: 480px) {
+  .cake__greeting-label {
+    font-size: 16px;
+    bottom: 14px;
+  }
+}
+
+/* -------------------- Cake colors -------------------- */
+#frosting,
+.cake__frosting use,
+.cake__frosting,
+.cake__frosting-patch {
+  fill: hsl(var(--frosting-hue, 320) 85% 75%);
+}
+
+.cake__sprinkle {
+  fill: hsl(var(--sprinkle-hue, 200) 90% 55%);
+  stroke: none;
+}
+
+/* Optional soft highlight on frosting for depth */
+.cake__frosting,
+#frosting {
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.08));
+}
